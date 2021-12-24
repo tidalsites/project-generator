@@ -4,6 +4,11 @@ import os, shutil, subprocess
 
 cwd = os.getcwd()
 
+git_config = {
+    "email": os.environ.get("GIT_EMAIL"),
+    "name": os.environ.get("GIT_NAME")
+}
+
 # TODO: Proper error handling
 
 # Helper function for subprocess
@@ -22,7 +27,7 @@ def install_gh():
         execute_subprocess(command)
         extract_tar = f'tar xvf gh_{VERSION}_linux_amd64.tar.gz'
         execute_subprocess(extract_tar)
-        copy_tar = f'sudo cp gh_{VERSION}_linux_amd64/bin/gh /usr/local/bin/'
+        copy_tar = f'cp gh_{VERSION}_linux_amd64/bin/gh /usr/local/bin/'
         execute_subprocess(copy_tar)
     except:
         print('Unable to install Github CLI')
@@ -76,6 +81,8 @@ def update_local_repo(project_name):
 # Push repo to newly created Github repo
 def push_repo(project_name, token):
     commands = ["git add *",
+    f'git config --global user.email {git_config["email"]}',
+    f'git config --global user.name {git_config["name"]}',
     "git commit -m 'Initial commit'",
     f"git remote add origin https://{token}@github.com/tidalsites/{project_name}.git",
     "git branch -M main",
